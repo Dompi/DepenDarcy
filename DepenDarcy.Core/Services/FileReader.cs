@@ -10,10 +10,9 @@ namespace DepenDarcy
     public class FileReader
     {
         private XmlDocument doc;
-        private readonly string nugetIdentifier;
         private readonly List<Nuget> nugets;
-//        private readonly List<string> exactFiles;
         private readonly List<string> fileTypes;
+        private readonly string nugetIdentifier;
 
 
         public FileReader()
@@ -21,14 +20,13 @@ namespace DepenDarcy
             doc = new XmlDocument();
             nugetIdentifier = "*.nuspec";
             nugets = new List<Nuget>();
-//            exactFiles = new List<string> { "packages.config" };
             fileTypes = new List<string> { "*.csproj", "packages.config" };
 
         }
 
         public void AddNuget(Nuget nuget)
         {
-            if(nugets.Any(x=>x.Name.Equals(nuget.Name)) == false)
+            if (nugets.Any(x => x.Name.Equals(nuget.Name)) == false)
             {
                 nugets.Add(nuget);
             }
