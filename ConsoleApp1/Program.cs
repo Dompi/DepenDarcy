@@ -11,11 +11,19 @@ namespace ConsoleApp1
             FileReader fileReader = new FileReader();
             //fileReader.FindNugets(@"C:\Source\DepenDarcy\DepenDarcy.Core");
 
-            string root = @"C:\Source\Sensor";
+            string root = @"C:\Sources\TECUTEST";
 
             fileReader.AddNuget(new Nuget { Name = "Microsoft.Extensions.Logging.Abstractions", Version = "1.1.1" });
             fileReader.FindNugets(root);
-            fileReader.GetDependencies(root);
+            var a  = fileReader.GetDependencies(root);
+
+
+            Console.WriteLine("---------------------------------------------------------------");
+            foreach (var item in a)
+            {
+                Console.WriteLine($"NugetName: {item.NugetName}, NugetVersion: {item.NugetVersion}, ProjectName: {item.ProjectName}");
+            }
+            Console.WriteLine("---------------------------------------------------------------");
 
             Console.ReadLine();
         }

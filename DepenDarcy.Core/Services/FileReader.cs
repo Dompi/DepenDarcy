@@ -37,32 +37,49 @@ namespace DepenDarcy
         {
             foreach (var currentFile in Directory.GetFiles(rout, nugetIdentifier, SearchOption.AllDirectories))
             {
-                doc.Load(currentFile);
-                nugets.Add(
-                    new Nuget
-                    {
-                        Name = doc.GetElementsByTagName("id").Item(0).InnerText,
-                        Version = doc.GetElementsByTagName("version").Item(0).InnerText
-                    });
+                try
+                {
+                    doc.Load(currentFile);
+                    nugets.Add(
+                        new Nuget
+                        {
+                            Name = doc.GetElementsByTagName("id").Item(0).InnerText,
+                            Version = doc.GetElementsByTagName("version").Item(0).InnerText
+                        });
+                }
+                catch (System.Exception)
+                {
+                    //TODO
+                }
             }
+
+            // Debug
+            foreach (var nuget in this.nugets)
+            {
+                System.Console.WriteLine($"Name: {nuget.Name}, Version: {nuget.Version}");
+            }
+
         }
 
         public List<Dependency> GetDependencies(string rout)
         {
             List<Dependency> dependencies = new List<Dependency>();
+            System.Console.WriteLine("--------------------------------");
             foreach (var pattern in fileTypes)
             {
                 foreach (var currentFile in Directory.GetFiles(rout, pattern, SearchOption.AllDirectories))
                 {
                     try
-                    {   // Open the text file using a stream reader.
+                    {
+                        System.Console.WriteLine(currentFile);
+                        // Open the text file using a stream reader.
                         using (StreamReader sr = new StreamReader(currentFile))
                         {
+                            // Read the stream to a string, and write the string to the console.
+                            string line = sr.ReadToEnd();
                             foreach (var nuget in nugets)
                             {
-                                // Read the stream to a string, and write the string to the console.
-                                string line = sr.ReadToEnd();
-                                if (line.Contains(pattern))
+                                if (line.Contains(nuget.Name))
                                 {
                                     dependencies.Add(
                                         new Dependency
@@ -80,6 +97,7 @@ namespace DepenDarcy
                     }
                 }
             }
+            System.Console.WriteLine("--------------------------------");
 
             return dependencies;
         }
