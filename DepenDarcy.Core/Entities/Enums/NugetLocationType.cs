@@ -4,7 +4,9 @@ using System.Text;
 
 namespace DepenDarcy.Core.Entities
 {
-    public enum NugetSourceType
+    public enum NugetLocationType
     {
+        Project = 0,
+        Packages = 1
     }
 }

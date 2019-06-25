@@ -8,13 +8,13 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            FileReader fileReader = new FileReader();
+            NugetManager fileReader = new NugetManager();
             //fileReader.FindNugets(@"C:\Source\DepenDarcy\DepenDarcy.Core");
 
             string root = @"C:\Sources\TECUTEST";
 
             fileReader.AddNuget(new Nuget { Name = "Microsoft.Extensions.Logging.Abstractions", Version = "1.1.1" });
-            fileReader.FindNugets(root);
+            fileReader.FindPublishedNugets(root);
             var a  = fileReader.GetDependencies(root);
 
 
