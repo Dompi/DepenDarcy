@@ -1,4 +1,6 @@
-﻿namespace DepenDarcy.Core
+﻿using System.Collections.Generic;
+
+namespace DepenDarcy.Core
 {
     public class Nuspec
     {
@@ -15,5 +17,6 @@
         public string ReleaseNotes { get; set; }
         public string Copyright { get; set; }
         public string Tags { get; set; }
+        public List<Dependency> Dependencies { get; set; }
     }
 }

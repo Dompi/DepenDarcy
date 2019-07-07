@@ -37,38 +37,38 @@ namespace DepenDarcy
         {
             List<Dependency> dependencies = new List<Dependency>();
             System.Console.WriteLine("--------------------------------");
-            foreach (var pattern in fileTypes)
-            {
-                foreach (var currentFile in Directory.GetFiles(rout, pattern, SearchOption.AllDirectories))
-                {
-                    try
-                    {
-                        System.Console.WriteLine(currentFile);
-                        // Open the text file using a stream reader.
-                        using (StreamReader sr = new StreamReader(currentFile))
-                        {
-                            // Read the stream to a string, and write the string to the console.
-                            string line = sr.ReadToEnd();
-                            foreach (var nuget in nugets)
-                            {
-                                if (line.Contains(nuget.Name))
-                                {
-                                    dependencies.Add(
-                                        new Dependency
-                                        {
-                                            NugetName = nuget.Name,
-                                            ProjectName = currentFile,
-                                            NugetVersion = nuget.Version
-                                        });
-                                }
-                            }
-                        }
-                    }
-                    catch (IOException e)
-                    {
-                    }
-                }
-            }
+            //foreach (var pattern in fileTypes)
+            //{
+            //    foreach (var currentFile in Directory.GetFiles(rout, pattern, SearchOption.AllDirectories))
+            //    {
+            //        try
+            //        {
+            //            System.Console.WriteLine(currentFile);
+            //            // Open the text file using a stream reader.
+            //            using (StreamReader sr = new StreamReader(currentFile))
+            //            {
+            //                // Read the stream to a string, and write the string to the console.
+            //                string line = sr.ReadToEnd();
+            //                foreach (var nuget in nugets)
+            //                {
+            //                    if (line.Contains(nuget.Name))
+            //                    {
+            //                        dependencies.Add(
+            //                            new Dependency
+            //                            {
+            //                                NugetName = nuget.Name,
+            //                                ProjectName = currentFile,
+            //                                NugetVersion = nuget.Version
+            //                            });
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        catch (IOException e)
+            //        {
+            //        }
+            //    }
+            //}
             System.Console.WriteLine("--------------------------------");
 
             return dependencies;
