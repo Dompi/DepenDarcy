@@ -1,18 +1,26 @@
 ﻿using DepenDarcy;
 using DepenDarcy.Core.Entities;
 using System;
+using System.IO;
 
 namespace ConsoleApp1
 {
     class Program
     {
+        private static string root = @"C:\Source\DepenDarcy";
         static void Main(string[] args)
         {
             //NugetManager fileReader = new NugetManager();
             //fileReader.FindNugets(@"C:\Source\DepenDarcy\DepenDarcy.Core");
 
-            Project p = new Project();
-            p.Analyze(@"C:\Source\DepenDarcy\ConsoleApp1\ConsoleApp1.csproj");
+            //Project p = new Project(@"C:\Source\DepenDarcy\ConsoleApp1\ConsoleApp1.csproj");
+            //p.Analyze();
+
+            foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
+            {
+                Solution s = new Solution(currentFile);
+                s.Analyze();
+            }
 
             //string root = @"C:\Sources\TECUTEST";
 
