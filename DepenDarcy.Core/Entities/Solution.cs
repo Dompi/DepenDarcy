@@ -38,19 +38,16 @@ namespace DepenDarcy.Core.Entities
                         new Project(proj[0].Replace("\"", "").Trim(), Path.Combine(root, proj[1].Replace("\"", "").Trim())));
                 }
 
-                // Get project dependencies
                 foreach (var proj in this.Projects)
                 {
+                    // Get project dependencies
                     proj.GetDependencies(this.Projects);
+
+                    // Get nugets published by the project
+                    proj.GetNugets();
                 }
 
-                // Get published nugets
-                // From nuspec
-                this.GetnugetsNuspec(root);
-
-                // From csproj
-                this.GetnugetsCsproj(root);
-
+                // Get project dependendents
                 // Get nuget dependencies
 
             }
@@ -60,63 +57,5 @@ namespace DepenDarcy.Core.Entities
             }
 
         }
-
-        private void GetnugetsCsproj(string rout)
-        {
-            List<Nuget> nugets = new List<Nuget>();
-            XmlDocument doc = new XmlDocument();
-            foreach (var currentFile in Directory.GetFiles(rout, "*.csproj", SearchOption.AllDirectories))
-            {
-                try
-                {
-                    doc.Load(currentFile);
-                    var name = doc.GetElementsByTagName("id").Item(0).InnerText;
-                    var version = doc.GetElementsByTagName("version").Item(0).InnerText;
-
-                    if (string.IsNullOrEmpty(name) == false)
-                    {
-                        nugets.Add(
-                            new Nuget
-                            {
-                                Name = name,
-                                Version = version
-                            });
-                    }
-                }
-                catch (System.Exception)
-                {
-                    //TODO
-                }
-            }
-            return nugets;
-        }
-        private void GetnugetsNuspec(string root)
-        {
-            XmlDocument doc = new XmlDocument();
-            foreach (var currentFile in Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories))
-            {
-                try
-                {
-                    doc.Load(currentFile);
-                    var name = doc.GetElementsByTagName("id").Item(0).InnerText;
-                    var version = doc.GetElementsByTagName("version").Item(0).InnerText;
-
-                    if (string.IsNullOrEmpty(name) == false)
-                    {
-                        new Nuget
-                        {
-                            Name = name,
-                            Version = version
-                        };
-                    }
-                }
-                catch (System.Exception)
-                {
-                    //TODO
-                }
-            }
-        }
-
-
     }
 }
