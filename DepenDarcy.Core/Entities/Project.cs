@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -7,6 +8,9 @@ namespace DepenDarcy.Core.Entities
 {
     public class Project
     {
+        private readonly ILogger logger;
+
+
         public string Name { get; set; }
         public string Destination { get; set; }
         public List<Project> Dependencies { get; set; }
@@ -14,23 +18,27 @@ namespace DepenDarcy.Core.Entities
         public List<Nuget> PublishedNugets { get; set; }
         public List<Nuget> UsedNugets { get; set; }
 
-        public Project()
+        public Project(ILogger logger)
         {
+            this.logger = logger;
             this.Dependencies = new List<Project>();
             this.Dependents = new List<Project>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
-        public Project(string destination)
+        public Project(string destination, ILogger logger)
         {
+            this.logger = logger;
             this.Destination = destination;
+            this.Name = Path.GetFileName(destination);
             this.Dependencies = new List<Project>();
             this.Dependents = new List<Project>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
-        public Project(string name, string destination)
+        public Project(string name, string destination, ILogger logger)
         {
+            this.logger = logger;
             this.Name = name;
             this.Destination = destination;
             this.Dependencies = new List<Project>();
@@ -61,6 +69,11 @@ namespace DepenDarcy.Core.Entities
                         {
                             this.Dependencies.Add(proj);
                         }
+                        else
+                        {
+                            //TODO
+                            this.logger.LogDebug($"There are no Project: {projName} in Destination: {this.Destination}");
+                        }
                     }
                 }
                 catch (System.Exception)
@@ -87,7 +100,7 @@ namespace DepenDarcy.Core.Entities
                     for (int i = 0; i < doc.GetElementsByTagName("ProjectReference").Count; i++)
                     {
                         var projName = doc.GetElementsByTagName("ProjectReference").Item(0).OuterXml.Split('\\').Single(x => x.Contains(".csproj")).Trim('"', ' ', '/', '>');
-                        this.Dependencies.Add(new Project(projName));
+                        this.Dependencies.Add(new Project(projName, this.logger));
                     }
                 }
                 catch (System.Exception)
@@ -132,13 +145,13 @@ namespace DepenDarcy.Core.Entities
                 //TODO
             }
         }
-        public void GetNugets()
+        public void GetPublishedNugets()
         {
-            this.GetnugetsCsproj();
-            this.GetnugetsNuspec();
+            this.GetNugetsCsproj();
+            this.GetNugetsNuspec();
         }
 
-        private void GetnugetsCsproj()
+        private void GetNugetsCsproj()
         {
             XmlDocument doc = new XmlDocument();
             try
@@ -166,7 +179,7 @@ namespace DepenDarcy.Core.Entities
                 //TODO
             }
         }
-        private void GetnugetsNuspec()
+        private void GetNugetsNuspec()
         {
             XmlDocument doc = new XmlDocument();
             var root = Path.GetDirectoryName(this.Destination);

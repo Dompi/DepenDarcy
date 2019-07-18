@@ -1,26 +1,40 @@
 ﻿using DepenDarcy;
 using DepenDarcy.Core.Entities;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ConsoleApp1
 {
     class Program
     {
-        private static string root = @"C:\Source\DepenDarcy";
+        private static string root = @"C:\Sources\TECUAll";
         static void Main(string[] args)
         {
+
+            Graph graph = new Graph(root, new MyLogger());
+            graph.BuildGraph();
+
+
             //NugetManager fileReader = new NugetManager();
             //fileReader.FindNugets(@"C:\Source\DepenDarcy\DepenDarcy.Core");
 
             //Project p = new Project(@"C:\Source\DepenDarcy\ConsoleApp1\ConsoleApp1.csproj");
             //p.Analyze();
 
-            foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
-            {
-                Solution s = new Solution(currentFile);
-                s.Analyze();
-            }
+            //List<Solution> solutions = new List<Solution>();
+
+            //foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
+            //{
+            //    Solution s = new Solution(currentFile, new MyLogger());
+            //    s.Analyze();
+            //    solutions.Add(s);
+            //}
+
+
+            //var a = solutions.Count;
 
             //string root = @"C:\Sources\TECUTEST";
 

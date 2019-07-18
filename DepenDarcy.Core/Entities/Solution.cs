@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -7,17 +8,23 @@ namespace DepenDarcy.Core.Entities
 {
     public class Solution
     {
+        private readonly ILogger logger;
+
+
         public string Name { get; private set; }
         public string Destination { get; private set; }
         public List<Project> Projects { get; set; }
 
-        public Solution()
+        public Solution(ILogger logger)
         {
+            this.logger = logger;
             this.Projects = new List<Project>();
         }
 
-        public Solution(string destination)
+        public Solution(string destination, ILogger logger)
         {
+            this.logger = logger;
+            this.Name = Path.GetFileName(destination).Replace(".sln", "").Trim();
             this.Destination = destination;
             this.Projects = new List<Project>();
         }
@@ -35,7 +42,7 @@ namespace DepenDarcy.Core.Entities
                 {
                     var proj = line.Substring(line.IndexOf('=') + 1).Split(',');
                     this.Projects.Add(
-                        new Project(proj[0].Replace("\"", "").Trim(), Path.Combine(root, proj[1].Replace("\"", "").Trim())));
+                        new Project(proj[0].Replace("\"", "").Trim(), Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger));
                 }
 
                 foreach (var proj in this.Projects)
@@ -44,7 +51,7 @@ namespace DepenDarcy.Core.Entities
                     proj.GetDependencies(this.Projects);
 
                     // Get nugets published by the project
-                    proj.GetNugets();
+                    proj.GetPublishedNugets();
                 }
 
                 // Get project dependendents
