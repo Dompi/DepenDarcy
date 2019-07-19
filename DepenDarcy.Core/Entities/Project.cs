@@ -47,46 +47,7 @@ namespace DepenDarcy.Core.Entities
             this.UsedNugets = new List<Nuget>();
         }
 
-        public void GetDependencies(List<Project> projects)
-        {
-            XmlDocument doc = new XmlDocument();
-            try
-            {
-                doc.Load(this.Destination);
 
-                // Get dependencies
-                try
-                {
-                    for (int i = 0; i < doc.GetElementsByTagName("ProjectReference").Count; i++)
-                    {
-                        var projNameBeta =
-                                doc.GetElementsByTagName("ProjectReference").Item(0).OuterXml
-                                    .Split('\\')
-                                    .Single(x => x.Contains(".csproj"));
-                        var projName = projNameBeta.Substring(0, projNameBeta.IndexOf(".csproj"));
-                        var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
-                        if (proj != null)
-                        {
-                            this.Dependencies.Add(proj);
-                        }
-                        else
-                        {
-                            //TODO
-                            this.logger.LogDebug($"There are no Project: {projName} in Destination: {this.Destination}");
-                        }
-                    }
-                }
-                catch (System.Exception)
-                {
-                    //TODO
-                }
-
-            }
-            catch (System.Exception)
-            {
-                //TODO
-            }
-        }
         public void Analyze()
         {
             XmlDocument doc = new XmlDocument();
@@ -145,13 +106,61 @@ namespace DepenDarcy.Core.Entities
                 //TODO
             }
         }
+
+
+
+        public void GetProjectDependencies(List<Project> projects)
+        {
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.Load(this.Destination);
+
+                // Get dependencies
+                try
+                {
+                    for (int i = 0; i < doc.GetElementsByTagName("ProjectReference").Count; i++)
+                    {
+                        var projNameBeta =
+                                doc.GetElementsByTagName("ProjectReference").Item(0).OuterXml
+                                    .Split('\\')
+                                    .Single(x => x.Contains(".csproj"));
+                        var projName = projNameBeta.Substring(0, projNameBeta.IndexOf(".csproj"));
+                        var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
+                        if (proj != null)
+                        {
+                            this.Dependencies.Add(proj);
+                        }
+                        else
+                        {
+                            //TODO
+                            this.logger.LogDebug($"There are no Project: {projName} in Destination: {this.Destination}");
+                        }
+                    }
+                }
+                catch (System.Exception)
+                {
+                    //TODO
+                }
+
+            }
+            catch (System.Exception)
+            {
+                //TODO
+            }
+        }
         public void GetPublishedNugets()
         {
-            this.GetNugetsCsproj();
-            this.GetNugetsNuspec();
+            this.GetPublishedNugetsCsproj();
+            this.GetPublishedNugetsNuspec();
+        }
+        public void GetUsedNugets()
+        {
+            this.GetUsedNugetsCsproj();
+            this.GetUsedNugetsNuspec();
         }
 
-        private void GetNugetsCsproj()
+        private void GetPublishedNugetsCsproj()
         {
             XmlDocument doc = new XmlDocument();
             try
@@ -179,7 +188,7 @@ namespace DepenDarcy.Core.Entities
                 //TODO
             }
         }
-        private void GetNugetsNuspec()
+        private void GetPublishedNugetsNuspec()
         {
             XmlDocument doc = new XmlDocument();
             var root = Path.GetDirectoryName(this.Destination);
@@ -200,6 +209,37 @@ namespace DepenDarcy.Core.Entities
                             Version = version
                         });
                     }
+                }
+                catch (System.Exception)
+                {
+                    //TODO
+                }
+            }
+        }
+
+        private void GetUsedNugetsCsproj()
+        {
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.Load(this.Destination);
+
+            }
+            catch (System.Exception)
+            {
+                //TODO
+            }
+        }
+        private void GetUsedNugetsNuspec()
+        {
+            XmlDocument doc = new XmlDocument();
+            var root = Path.GetDirectoryName(this.Destination);
+            foreach (var currentFile in Directory.GetFiles(root, "packages.config", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    doc.Load(currentFile);
+                    //TODO
                 }
                 catch (System.Exception)
                 {

@@ -20,7 +20,6 @@ namespace DepenDarcy.Core.Entities
             this.logger = logger;
             this.Projects = new List<Project>();
         }
-
         public Solution(string destination, ILogger logger)
         {
             this.logger = logger;
@@ -48,10 +47,13 @@ namespace DepenDarcy.Core.Entities
                 foreach (var proj in this.Projects)
                 {
                     // Get project dependencies
-                    proj.GetDependencies(this.Projects);
+                    proj.GetProjectDependencies(this.Projects);
 
-                    // Get nugets published by the project
+                    // Get published nugets
                     proj.GetPublishedNugets();
+
+                    // Get used nugets 
+                    proj.GetUsedNugets();
                 }
 
                 // Get project dependendents
