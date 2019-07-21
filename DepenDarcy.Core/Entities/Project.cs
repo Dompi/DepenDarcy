@@ -249,10 +249,23 @@ namespace DepenDarcy.Core.Entities
                 {
                     for (int i = 0; i < xmlNodePackageReference.Count; i++)
                     {
+                        string version = null;
+                        try
+                        {
+                            version = xmlNodePackageReference[i].Attributes["Version"].Value;
+                        }
+                        catch (Exception e)
+                        {
+                            for (int j = 0; j < xmlNodePackageReference[i].ChildNodes.Count; j++)
+                            {
+                                version = xmlNodePackageReference[i].ChildNodes[j].InnerText;
+                            }
+                        }
+
                         this.UsedNugets.Add(new Nuget
                         {
                             Name = xmlNodePackageReference[i].Attributes["Include"].Value,
-                            Version = xmlNodePackageReference[i].Attributes["Version"].Value
+                            Version = version
                         });
                     }
                 }
