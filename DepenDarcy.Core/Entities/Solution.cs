@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
 
 namespace DepenDarcy.Core.Entities
 {
     public class Solution
     {
         private readonly ILogger logger;
-
 
         public string Name { get; private set; }
         public string Destination { get; private set; }
@@ -19,6 +17,7 @@ namespace DepenDarcy.Core.Entities
         {
             this.logger = logger;
             this.Projects = new List<Project>();
+            this.Analyze();
         }
         public Solution(string destination, ILogger logger)
         {
@@ -26,9 +25,10 @@ namespace DepenDarcy.Core.Entities
             this.Name = Path.GetFileName(destination).Replace(".sln", "").Trim();
             this.Destination = destination;
             this.Projects = new List<Project>();
+            this.Analyze();
         }
 
-        public void Analyze()
+        private void Analyze()
         {
             try
             {
@@ -41,9 +41,13 @@ namespace DepenDarcy.Core.Entities
                 {
                     var proj = line.Substring(line.IndexOf('=') + 1).Split(',');
                     this.Projects.Add(
-                        new Project(proj[0].Replace("\"", "").Trim(), Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger));
+                        new Project(
+                                proj[0].Replace("\"", "").Trim(), 
+                                Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger)
+                        );
                 }
 
+                // Get dependencies and nugets
                 foreach (var proj in this.Projects)
                 {
                     // Get project dependencies
@@ -58,7 +62,6 @@ namespace DepenDarcy.Core.Entities
 
                 // Get project dependendents
                 // Get nuget dependencies
-
             }
             catch (System.Exception)
             {

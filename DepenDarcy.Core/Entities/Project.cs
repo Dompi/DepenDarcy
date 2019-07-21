@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using DepenDarcy.Core.Extensions;
 
 namespace DepenDarcy.Core.Entities
 {
     public class Project
     {
         private readonly ILogger logger;
-
 
         public string Name { get; set; }
         public string Destination { get; set; }
@@ -111,20 +112,15 @@ namespace DepenDarcy.Core.Entities
 
         public void GetProjectDependencies(List<Project> projects)
         {
-            XmlDocument doc = new XmlDocument();
             try
             {
+                XmlDocument doc = new XmlDocument();
                 doc.Load(this.Destination);
-
-                // Get dependencies
-                try
+                if (doc.TryGetElementsByTagName("ProjectReference", out XmlNodeList xmlNodeList))
                 {
-                    for (int i = 0; i < doc.GetElementsByTagName("ProjectReference").Count; i++)
+                    for (int i = 0; i < xmlNodeList.Count; i++)
                     {
-                        var projNameBeta =
-                                doc.GetElementsByTagName("ProjectReference").Item(0).OuterXml
-                                    .Split('\\')
-                                    .Single(x => x.Contains(".csproj"));
+                        var projNameBeta = xmlNodeList.Item(0).OuterXml.Split('\\').Single(x => x.Contains(".csproj"));
                         var projName = projNameBeta.Substring(0, projNameBeta.IndexOf(".csproj"));
                         var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
                         if (proj != null)
@@ -138,11 +134,6 @@ namespace DepenDarcy.Core.Entities
                         }
                     }
                 }
-                catch (System.Exception)
-                {
-                    //TODO
-                }
-
             }
             catch (System.Exception)
             {
@@ -157,7 +148,7 @@ namespace DepenDarcy.Core.Entities
         public void GetUsedNugets()
         {
             this.GetUsedNugetsCsproj();
-            this.GetUsedNugetsNuspec();
+            this.GetUsedNugetsPackages();
         }
 
         private void GetPublishedNugetsCsproj()
@@ -166,25 +157,43 @@ namespace DepenDarcy.Core.Entities
             try
             {
                 doc.Load(this.Destination);
-
-                if (bool.Parse(doc.GetElementsByTagName("GeneratePackageOnBuild").Item(0).InnerText))
+                if (doc.TryGetElementsByTagName("GeneratePackageOnBuild", out XmlNodeList xmlNodeList))
                 {
-                    var name = doc.GetElementsByTagName("id").Item(0).InnerText;
-                    var version = doc.GetElementsByTagName("version").Item(0).InnerText;
-
-                    if (string.IsNullOrEmpty(name) == false)
+                    if (bool.Parse(xmlNodeList.Item(0).InnerText))
                     {
-                        this.PublishedNugets.Add(
-                            new Nuget
-                            {
-                                Name = name,
-                                Version = version
-                            });
+                        string name, version;
+                        if (doc.TryGetElementsByTagName("id", out XmlNodeList xmlNodeId))
+                        {
+                            name = xmlNodeId.Item(0).InnerText;
+                        }
+                        else
+                        {
+                            name = this.Name;
+                        }
+                        if (doc.TryGetElementsByTagName("version", out XmlNodeList xmlNodeVersion))
+                        {
+                            version = xmlNodeVersion.Item(0).InnerText;
+                        }
+                        else
+                        {
+                            version = "1.0.0";
+                        }
+
+                        if (string.IsNullOrEmpty(name) == false)
+                        {
+                            this.PublishedNugets.Add(
+                                new Nuget
+                                {
+                                    Name = name,
+                                    Version = version
+                                });
+                        }
                     }
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
+                var eee = e.Message;
                 //TODO
             }
         }
@@ -194,11 +203,24 @@ namespace DepenDarcy.Core.Entities
             var root = Path.GetDirectoryName(this.Destination);
             foreach (var currentFile in Directory.GetFiles(root, "*.nuspec", SearchOption.AllDirectories))
             {
+                if (currentFile.Contains("bin") || currentFile.Contains("obj"))
+                {
+                    continue;
+                }
                 try
                 {
+                    string version;
                     doc.Load(currentFile);
                     var name = doc.GetElementsByTagName("id").Item(0).InnerText;
-                    var version = doc.GetElementsByTagName("version").Item(0).InnerText;
+                    if (doc.TryGetElementsByTagName("version", out XmlNodeList xmlNodeVersion))
+                    {
+                        version = xmlNodeVersion.Item(0).InnerText;
+                    }
+                    else
+                    {
+                        // TODO from assembly
+                        version = "1.0.0";
+                    }
 
                     if (string.IsNullOrEmpty(name) == false)
                     {
@@ -223,23 +245,46 @@ namespace DepenDarcy.Core.Entities
             try
             {
                 doc.Load(this.Destination);
+                if (doc.TryGetElementsByTagName("PackageReference", out XmlNodeList xmlNodePackageReference))
+                {
+                    for (int i = 0; i < xmlNodePackageReference.Count; i++)
+                    {
+                        this.UsedNugets.Add(new Nuget
+                        {
+                            Name = xmlNodePackageReference[i].Attributes["Include"].Value,
+                            Version = xmlNodePackageReference[i].Attributes["Version"].Value
+                        });
+                    }
+                }
 
             }
-            catch (System.Exception)
+            catch (Exception e)
             {
                 //TODO
+                var aaa = e.Message;
             }
         }
-        private void GetUsedNugetsNuspec()
+        private void GetUsedNugetsPackages()
         {
-            XmlDocument doc = new XmlDocument();
             var root = Path.GetDirectoryName(this.Destination);
             foreach (var currentFile in Directory.GetFiles(root, "packages.config", SearchOption.AllDirectories))
             {
                 try
                 {
+                    XmlDocument doc = new XmlDocument();
                     doc.Load(currentFile);
-                    //TODO
+                    if (doc.TryGetElementsByTagName("packages", out XmlNodeList xmlNodePackages))
+                    {
+                        for (int i = 0; i < xmlNodePackages.Count; i++)
+                        {
+                            this.UsedNugets.Add(new Nuget
+                            {
+                                Name = xmlNodePackages[i].Attributes["id"].Value,
+                                Version = xmlNodePackages[i].Attributes["version"].Value
+                            });
+                        }
+                    }
+
                 }
                 catch (System.Exception)
                 {

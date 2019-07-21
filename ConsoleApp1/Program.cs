@@ -1,22 +1,22 @@
-﻿using DepenDarcy;
-using DepenDarcy.Core.Entities;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using System;
-using System.Collections.Generic;
+﻿using DepenDarcy.Core.Entities;
 using System.IO;
 
 namespace ConsoleApp1
 {
     class Program
     {
-        private static string root = @"C:\Sources\TECUAll";
+        private static string root = @"C:\Source\8NSensor";
+        //private static string root = @"C:\Source\DepenDarcy";
         static void Main(string[] args)
         {
+
+            //var aa = Directory.GetFiles(@"C:\Source", "packages.config", SearchOption.AllDirectories);
+
 
             Graph graph = new Graph(root, new MyLogger());
             graph.BuildGraph();
 
+            var a = 5;
 
             //NugetManager fileReader = new NugetManager();
             //fileReader.FindNugets(@"C:\Source\DepenDarcy\DepenDarcy.Core");

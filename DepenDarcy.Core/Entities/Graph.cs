@@ -25,7 +25,6 @@ namespace DepenDarcy.Core.Entities
             foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
             {
                 Solution s = new Solution(currentFile, this.logger);
-                s.Analyze();
                 solutions.Add(s);
 
                 // Add graph points
