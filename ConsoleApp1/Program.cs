@@ -5,7 +5,8 @@ namespace ConsoleApp1
 {
     class Program
     {
-        private static string root = @"C:\Source\8NSensor";
+        private static string root = @"C:\Sources\TECUTEST\accountverification";
+        //private static string root = @"C:\Sources\TECUTEST";
         //private static string root = @"C:\Source\DepenDarcy";
         static void Main(string[] args)
         {

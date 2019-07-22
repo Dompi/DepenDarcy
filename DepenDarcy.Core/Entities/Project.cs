@@ -120,7 +120,7 @@ namespace DepenDarcy.Core.Entities
                 {
                     for (int i = 0; i < xmlNodeList.Count; i++)
                     {
-                        var projNameBeta = xmlNodeList.Item(0).OuterXml.Split('\\').Single(x => x.Contains(".csproj"));
+                        var projNameBeta = xmlNodeList.Item(i).OuterXml.Split('\\').Single(x => x.Contains(".csproj"));
                         var projName = projNameBeta.Substring(0, projNameBeta.IndexOf(".csproj"));
                         var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
                         if (proj != null)
@@ -138,6 +138,8 @@ namespace DepenDarcy.Core.Entities
             catch (System.Exception)
             {
                 //TODO
+                this.logger.LogDebug($"There are some issue reading Project in Destination: {this.Destination}");
+
             }
         }
         public void GetPublishedNugets()

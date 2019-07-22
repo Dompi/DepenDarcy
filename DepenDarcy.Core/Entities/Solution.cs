@@ -40,11 +40,18 @@ namespace DepenDarcy.Core.Entities
                 foreach (var line in lines)
                 {
                     var proj = line.Substring(line.IndexOf('=') + 1).Split(',');
-                    this.Projects.Add(
-                        new Project(
-                                proj[0].Replace("\"", "").Trim(), 
-                                Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger)
-                        );
+                    if (proj[1].Contains(".csproj") || proj[1].Contains(".sqlproj"))
+                    {
+                        this.Projects.Add(
+                            new Project(
+                                    proj[0].Replace("\"", "").Trim(),
+                                    Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger)
+                            );
+                    }
+                    else
+                    {
+                        // TODO
+                    }
                 }
 
                 // Get dependencies and nugets
