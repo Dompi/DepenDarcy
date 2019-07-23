@@ -68,6 +68,7 @@ namespace DepenDarcy.Core.Entities
                 catch (System.Exception)
                 {
                     //TODO
+                    this.logger.LogDebug($"There are some issue reading ProjectReference in Destination: {this.Destination}");
                 }
 
                 // Get nuget
@@ -100,11 +101,13 @@ namespace DepenDarcy.Core.Entities
                 catch (System.Exception)
                 {
                     //TODO
+                    this.logger.LogDebug($"There are some issue reading Get nuget from csproj in Destination: {this.Destination}");
                 }
             }
             catch (System.Exception)
             {
                 //TODO
+                this.logger.LogDebug($"There are some issue loading: {this.Destination}");
             }
         }
 
@@ -195,8 +198,8 @@ namespace DepenDarcy.Core.Entities
             }
             catch (System.Exception e)
             {
-                var eee = e.Message;
                 //TODO
+                this.logger.LogDebug($"There are some issue reading document in Destination: {this.Destination}");
             }
         }
         private void GetPublishedNugetsNuspec()
@@ -234,8 +237,9 @@ namespace DepenDarcy.Core.Entities
                         });
                     }
                 }
-                catch (System.Exception)
+                catch (Exception e)
                 {
+                    this.logger.LogDebug($"There are some issue reading document in Destination: {currentFile} message: {e.Message}");
                     //TODO
                 }
             }
@@ -276,7 +280,7 @@ namespace DepenDarcy.Core.Entities
             catch (Exception e)
             {
                 //TODO
-                var aaa = e.Message;
+                this.logger.LogDebug($"There are some issue reading document in Destination: {this.Destination}");
             }
         }
         private void GetUsedNugetsPackages()
@@ -290,20 +294,21 @@ namespace DepenDarcy.Core.Entities
                     doc.Load(currentFile);
                     if (doc.TryGetElementsByTagName("packages", out XmlNodeList xmlNodePackages))
                     {
-                        for (int i = 0; i < xmlNodePackages.Count; i++)
+                        for (int i = 0; i < xmlNodePackages[0].ChildNodes.Count; i++)
                         {
                             this.UsedNugets.Add(new Nuget
                             {
-                                Name = xmlNodePackages[i].Attributes["id"].Value,
-                                Version = xmlNodePackages[i].Attributes["version"].Value
+                                Name = xmlNodePackages[0].ChildNodes[i].Attributes["id"].Value,
+                                Version = xmlNodePackages[0].ChildNodes[i].Attributes["version"].Value
                             });
                         }
                     }
 
                 }
-                catch (System.Exception)
+                catch (Exception e)
                 {
                     //TODO
+                    this.logger.LogDebug($"There are some issue reading document in Destination: {currentFile} message {e.Message}");
                 }
             }
         }

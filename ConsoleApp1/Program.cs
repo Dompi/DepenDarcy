@@ -1,17 +1,41 @@
 ﻿using DepenDarcy.Core.Entities;
 using System.IO;
+using System.Xml;
+using DepenDarcy.Core.Extensions;
 
 namespace ConsoleApp1
 {
     class Program
     {
-        private static string root = @"C:\Sources\TECUTEST\accountverification";
-        //private static string root = @"C:\Sources\TECUTEST";
+        //private static string root = @"C:\Sources\TECUTEST\accountverification";
+        private static string root = @"C:\Sources\TECUTEST";
         //private static string root = @"C:\Source\DepenDarcy";
+        private static string currentFile = @"C:\Sources\TECUTEST\customerupgrader\src\Techsson.Platform.Customers.CustomerUpgrader.Database\Techsson.Platform.Customers.CustomerUpgrader.Database.nuspec";
         static void Main(string[] args)
         {
 
             //var aa = Directory.GetFiles(@"C:\Source", "packages.config", SearchOption.AllDirectories);
+
+
+            string version;
+            var ff = File.ReadAllLines(currentFile);
+            XmlDocument doc = new XmlDocument();
+            doc.Load(currentFile);
+            var name = doc.GetElementsByTagName("id").Item(0).InnerText;
+            if (doc.TryGetElementsByTagName("version", out XmlNodeList xmlNodeVersion))
+            {
+                version = xmlNodeVersion.Item(0).InnerText;
+            }
+            else
+            {
+                // TODO from assembly
+                version = "1.0.0";
+            }
+
+            if (string.IsNullOrEmpty(name) == false)
+            {
+            }
+
 
 
             Graph graph = new Graph(root, new MyLogger());
