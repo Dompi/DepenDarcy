@@ -10,7 +10,7 @@ namespace ConsoleApp1
         //private static string root = @"C:\Sources\TECUTEST\accountverification";
         private static string root = @"C:\Sources\TECUTEST";
         //private static string root = @"C:\Source\DepenDarcy";
-        private static string currentFile = @"C:\Sources\TECUTEST\customerupgrader\src\Techsson.Platform.Customers.CustomerUpgrader.Database\Techsson.Platform.Customers.CustomerUpgrader.Database.nuspec";
+        private static string currentFile = @"C:\Hasznos\Temp\Teemp.nuspec";
         static void Main(string[] args)
         {
 
@@ -40,6 +40,8 @@ namespace ConsoleApp1
 
             Graph graph = new Graph(root, new MyLogger());
             graph.BuildGraph();
+
+
 
             var a = 5;
 
