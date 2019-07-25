@@ -6,5 +6,10 @@ namespace DepenDarcy.Core.Entities
     {
         public Project Project { get; set; }
         public List<Edge> Edges { get; set; }
+
+        public Node()
+        {
+            this.Edges = new List<Edge>();
+        }
     }
 }

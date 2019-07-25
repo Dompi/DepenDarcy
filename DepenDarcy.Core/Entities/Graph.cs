@@ -7,21 +7,23 @@ namespace DepenDarcy.Core.Entities
 {
     public class Graph
     {
-        public List<Solution> Solutions { get; private set; }
-        public List<Project> Projects { get; private set; }
-        private readonly string root;
         private readonly ILogger logger;
 
-        public Graph(string root, ILogger logger)
+        public List<Node> Nodes { get; private set; }
+
+
+        
+        public Graph(ILogger logger)
         {
-            this.root = root;
             this.logger = logger;
-            this.Solutions = new List<Solution>();
-            this.Projects = new List<Project>();
+            this.Nodes = new List<Node>();
         }
 
-        public void BuildGraph()
+        public void BuildGraph(string root)
         {
+            var Solutions = new List<Solution>();
+            var Projects = new List<Project>();
+
             // Create and analyze solutions
             foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
             {
@@ -29,15 +31,15 @@ namespace DepenDarcy.Core.Entities
                 Solutions.Add(s);
 
                 // Add graph points
-                this.Projects.AddRange(s.Projects);
+                Projects.AddRange(s.Projects);
             }
 
             // Create dependencies throw nugets
-            foreach (var proj in this.Projects.Where(x=>x.PublishedNugets.Any()))
+            foreach (var proj in Projects.Where(x=>x.PublishedNugets.Any()))
             {
                 foreach (var publishedNuget in proj.PublishedNugets)
                 {
-                    foreach (var testedProj in this.projects)
+                    foreach (var testedProj in Projects)
                     {
                         if (testedProj.UsedNugets.Select(x=>x.Name).Contains(publishedNuget.Name) == true &&
                             testedProj.Dependencies.Any(y => y.Name == proj.Name) == false)
@@ -52,19 +54,18 @@ namespace DepenDarcy.Core.Entities
 
 
 
-            var d = this.Projects.Single(x => x.Name.Equals("Customers.Core")).Dependencies;
-            var p = this.Projects.Single(x => x.Name.Equals("Customers.Core")).PublishedNugets;
-            var u = this.Projects.Single(x => x.Name.Equals("Customers.Core")).UsedNugets;
 
-            var aaaa = 3;
         }
 
-        public void GetDependencies(Project project)
+        public void GetDependencies(Node node)
         {
-            var p = this.Projects.Single(x => x.Name == project.Name);
+            List<Project> projects = new List<Project>();
             do
             {
+                foreach (var item in node.Edges)
+                {
 
+                }
             } while (true);
         }
     }
