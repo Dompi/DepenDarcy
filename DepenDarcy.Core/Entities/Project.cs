@@ -64,6 +64,7 @@ namespace DepenDarcy.Core.Entities
                         if (proj != null)
                         {
                             this.Dependencies.Add(proj);
+                            proj.Dependents.Add(this);
                         }
                         else
                         {

@@ -96,7 +96,6 @@ namespace DepenDarcy.Core.Entities
                         this.logger.LogDebug($"There are some issue reading sln in Destination: {this.Destination} exp message: {e.Message}");
                     }
                 }
-
                 // Get project dependendents
                 // Get nuget dependencies
             }

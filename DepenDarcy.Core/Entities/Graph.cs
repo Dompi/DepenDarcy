@@ -9,21 +9,18 @@ namespace DepenDarcy.Core.Entities
     {
         private readonly ILogger logger;
 
-        public List<Node> Nodes { get; private set; }
+        public List<Solution> Solutions;
+        public List<Project> Projects;
 
-
-        
         public Graph(ILogger logger)
         {
             this.logger = logger;
-            this.Nodes = new List<Node>();
+            this.Solutions = new List<Solution>();
+            this.Projects = new List<Project>();
         }
 
         public void BuildGraph(string root)
         {
-            var Solutions = new List<Solution>();
-            var Projects = new List<Project>();
-
             // Create and analyze solutions
             foreach (var currentFile in Directory.GetFiles(root, "*.sln", SearchOption.AllDirectories))
             {
@@ -35,38 +32,41 @@ namespace DepenDarcy.Core.Entities
             }
 
             // Create dependencies throw nugets
-            foreach (var proj in Projects.Where(x=>x.PublishedNugets.Any()))
+            foreach (var proj in Projects.Where(x => x.PublishedNugets.Any()))
             {
                 foreach (var publishedNuget in proj.PublishedNugets)
                 {
-                    foreach (var testedProj in Projects)
+                    foreach (var testedProj in Projects.Where(x => x.UsedNugets.Select(y => y.Name).Contains(publishedNuget.Name)))
                     {
-                        if (testedProj.UsedNugets.Select(x=>x.Name).Contains(publishedNuget.Name) == true &&
-                            testedProj.Dependencies.Any(y => y.Name == proj.Name) == false)
+                        if (testedProj.Dependencies.Any(y => y.Name == proj.Name) == false)
                         {
                             testedProj.Dependencies.Add(proj);
+                        }
+                        if (proj.Dependents.Any(y => y.Name == testedProj.Name) == false)
+                        {
+                            proj.Dependents.Add(testedProj);
                         }
                     }
                 }
             }
-
-            // Create dependency graph edges
-
-
-
-
         }
 
-        public void GetDependencies(Node node)
+        public void GetDependencies(Project project)
         {
-            List<Project> projects = new List<Project>();
-            do
+            int level = 1;
+            Dictionary<int, List<Project>> graphLevels = new Dictionary<int, List<Project>>()
             {
-                foreach (var item in node.Edges)
+                { 0, new List<Project> { project} }
+            };
+            List<Project> projectsToScan = new List<Project>(project.Dependents);
+            while (projectsToScan.Any())
+            {
+                List<Project> nextLevel = new List<Project>();
+                foreach (var item in projectsToScan)
                 {
 
                 }
-            } while (true);
+            }
         }
     }
 }
