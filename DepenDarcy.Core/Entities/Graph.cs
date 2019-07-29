@@ -62,10 +62,13 @@ namespace DepenDarcy.Core.Entities
             while (projectsToScan.Any())
             {
                 List<Project> nextLevel = new List<Project>();
-                foreach (var item in projectsToScan)
+                foreach (var proj in projectsToScan)
                 {
-
+                    nextLevel.AddRange(proj.Dependents);
                 }
+                graphLevels.Add(level, new List<Project>(projectsToScan));
+                level++;
+                projectsToScan = nextLevel;
             }
         }
     }
