@@ -51,7 +51,7 @@ namespace DepenDarcy.Core.Entities
             }
         }
 
-        public void GetDependencies(Project project)
+        public Dictionary<int, List<Project>> GetDependencies(Project project)
         {
             int level = 1;
             Dictionary<int, List<Project>> graphLevels = new Dictionary<int, List<Project>>()
@@ -64,12 +64,15 @@ namespace DepenDarcy.Core.Entities
                 List<Project> nextLevel = new List<Project>();
                 foreach (var proj in projectsToScan)
                 {
-                    nextLevel.AddRange(proj.Dependents);
+                    nextLevel.AddRange(proj.Dependents.Where(x=>nextLevel.Select(n=>n.Name).Contains(x.Name) == false));
                 }
                 graphLevels.Add(level, new List<Project>(projectsToScan));
                 level++;
-                projectsToScan = nextLevel;
+                projectsToScan = nextLevel.Where(x=>x.PublishedNugets.Any()).ToList();
             }
+
+
+            return graphLevels;
         }
     }
 }
