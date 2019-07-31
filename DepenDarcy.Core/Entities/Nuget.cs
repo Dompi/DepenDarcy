@@ -6,6 +6,6 @@ namespace DepenDarcy.Core.Entities
     {
         public string Name { get; set; }
         public string Version { get; set; }
-        public List<Dependency> Dependencies { get; set; }
+        public List<NugetDependency> Dependencies { get; set; }
     }
 }

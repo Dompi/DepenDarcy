@@ -1,6 +1,6 @@
 ﻿namespace DepenDarcy.Core
 {
-    public class Dependency
+    public class NugetDependency
     {
         public string NugetName { get; set; }
         public string NugetVersion { get; set; }

@@ -17,6 +17,6 @@ namespace DepenDarcy.Core
         public string ReleaseNotes { get; set; }
         public string Copyright { get; set; }
         public string Tags { get; set; }
-        public List<Dependency> Dependencies { get; set; }
+        public List<NugetDependency> Dependencies { get; set; }
     }
 }

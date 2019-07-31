@@ -14,16 +14,16 @@ namespace DepenDarcy.Core.Entities
 
         public string Name { get; set; }
         public string Destination { get; set; }
-        public List<Project> Dependencies { get; set; }
-        public List<Project> Dependents { get; set; }
+        public List<ProjectDependency> ProjectDependencies { get; set; }
+        public List<ProjectDependency> ProjectDependents { get; set; }
         public List<Nuget> PublishedNugets { get; set; }
         public List<Nuget> UsedNugets { get; set; }
 
         public Project(ILogger logger)
         {
             this.logger = logger;
-            this.Dependencies = new List<Project>();
-            this.Dependents = new List<Project>();
+            this.ProjectDependencies = new List<ProjectDependency>();
+            this.ProjectDependents = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
@@ -32,8 +32,8 @@ namespace DepenDarcy.Core.Entities
             this.logger = logger;
             this.Destination = destination;
             this.Name = Path.GetFileName(destination);
-            this.Dependencies = new List<Project>();
-            this.Dependents = new List<Project>();
+            this.ProjectDependencies = new List<ProjectDependency>();
+            this.ProjectDependents = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
@@ -42,8 +42,8 @@ namespace DepenDarcy.Core.Entities
             this.logger = logger;
             this.Name = name;
             this.Destination = destination;
-            this.Dependencies = new List<Project>();
-            this.Dependents = new List<Project>();
+            this.ProjectDependencies = new List<ProjectDependency>();
+            this.ProjectDependents = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
@@ -63,8 +63,8 @@ namespace DepenDarcy.Core.Entities
                         var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
                         if (proj != null)
                         {
-                            this.Dependencies.Add(proj);
-                            proj.Dependents.Add(this);
+                            this.ProjectDependencies.Add(new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Reference });
+                            proj.ProjectDependents.Add(new ProjectDependency { Project = this, ProjectDependencyType = ProjectDependencyType.Reference });
                         }
                         else
                         {
@@ -78,7 +78,6 @@ namespace DepenDarcy.Core.Entities
             {
                 //TODO
                 this.logger.LogDebug($"There are some issue reading Project in Destination: {this.Destination}");
-
             }
         }
         public void GetPublishedNugets()
