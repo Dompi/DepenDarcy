@@ -38,13 +38,13 @@ namespace DepenDarcy.Core.Entities
                 {
                     foreach (var testedProj in Projects.Where(x => x.UsedNugets.Select(y => y.Name).Contains(publishedNuget.Name)))
                     {
-                        if (testedProj.Dependencies.Any(y => y.Name == proj.Name) == false)
+                        if (testedProj.ProjectDependencies.Any(y => y.Project.Name == proj.Name) == false)
                         {
-                            testedProj.Dependencies.Add(proj);
+                            testedProj.ProjectDependencies.Add( new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Nuget });
                         }
-                        if (proj.Dependents.Any(y => y.Name == testedProj.Name) == false)
+                        if (proj.ProjectDependents.Any(y => y.Project.Name == testedProj.Name) == false)
                         {
-                            proj.Dependents.Add(testedProj);
+                            proj.ProjectDependents.Add(new ProjectDependency { Project = testedProj, ProjectDependencyType = ProjectDependencyType.Nuget });
                         }
                     }
                 }
@@ -58,10 +58,10 @@ namespace DepenDarcy.Core.Entities
             {
                 { 0, new List<Project> { project} }
             };
-            List<Project> projectsToScan = new List<Project>(project.Dependents);
+            List<ProjectDependency> projectsToScan = new List<ProjectDependency>(project.ProjectDependents);
             while (projectsToScan.Any())
             {
-                List<Project> nextLevel = new List<Project>();
+                List<ProjectDependency> nextLevel = new List<ProjectDependency>();
                 foreach (var proj in projectsToScan)
                 {
                     nextLevel.AddRange(proj.Dependents.Where(x=>nextLevel.Select(n=>n.Name).Contains(x.Name) == false));
