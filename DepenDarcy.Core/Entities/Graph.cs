@@ -40,7 +40,7 @@ namespace DepenDarcy.Core.Entities
                     {
                         if (testedProj.ProjectDependencies.Any(y => y.Project.Name == proj.Name) == false)
                         {
-                            testedProj.ProjectDependencies.Add( new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Nuget });
+                            testedProj.ProjectDependencies.Add(new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Nuget });
                         }
                         if (proj.ProjectDependents.Any(y => y.Project.Name == testedProj.Name) == false)
                         {
@@ -50,27 +50,98 @@ namespace DepenDarcy.Core.Entities
                 }
             }
         }
-
-        public Dictionary<int, List<Project>> GetDependencies(Project project)
+        public Dictionary<int, List<Project>> GetNugetDependenciesDFS(Project project)
         {
             int level = 1;
             Dictionary<int, List<Project>> graphLevels = new Dictionary<int, List<Project>>()
             {
                 { 0, new List<Project> { project} }
             };
-            List<ProjectDependency> projectsToScan = new List<ProjectDependency>(project.ProjectDependents);
-            while (projectsToScan.Any())
+            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.ProjectDependents);
+
+            while (projectsDependencyToScan.Any())
             {
                 List<ProjectDependency> nextLevel = new List<ProjectDependency>();
-                foreach (var proj in projectsToScan)
+                foreach (var dependency in projectsDependencyToScan)
                 {
-                    nextLevel.AddRange(proj.Dependents.Where(x=>nextLevel.Select(n=>n.Name).Contains(x.Name) == false));
+                    nextLevel.AddRange(dependency.Project.ProjectDependents.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
                 }
-                graphLevels.Add(level, new List<Project>(projectsToScan));
+
+                var nextLevelCandidates = projectsDependencyToScan.Where(d => d.ProjectDependencyType == ProjectDependencyType.Nuget).Select(x => x.Project);
+                if (nextLevelCandidates.Any())
+                {
+                    graphLevels.Add(level, new List<Project>(nextLevelCandidates));
+                }
                 level++;
-                projectsToScan = nextLevel.Where(x=>x.PublishedNugets.Any()).ToList();
+                projectsDependencyToScan = nextLevel.ToList();
             }
 
+            return graphLevels;
+        }
+        public Dictionary<string, List<ProjectNugetVersion>> GetNugetProject()
+        {
+            Dictionary<string, List<ProjectNugetVersion>> projectNugetVersion = new Dictionary<string, List<ProjectNugetVersion>>();
+            foreach (var proj in this.Projects)
+            {
+                foreach (var nuget in proj.UsedNugets)
+                {
+                    if (projectNugetVersion.TryGetValue(nuget.Name, out List<ProjectNugetVersion> projectList) == true)
+                    {
+                        projectList.Add(new ProjectNugetVersion { ProjectName = proj.Name, NugetVersion = nuget.Version });
+                    }
+                    else
+                    {
+                        projectNugetVersion.Add(nuget.Name, new List<ProjectNugetVersion>() { new ProjectNugetVersion { ProjectName = proj.Name, NugetVersion = nuget.Version } });
+                    }
+                }
+            }
+
+            return projectNugetVersion;
+        }
+        public List<List<Project>> GetBoundydContexts()
+        {
+            List<List<Project>> boundydContexts = new List<List<Project>>();
+            List<Project> allProjects = new List<Project>(this.Projects);
+
+            while (allProjects.Any())
+            {
+                List<Project> boundeydContext = new List<Project>();
+                foreach (var item in this.GetDependenciesDFS(allProjects.First()))
+                {
+                    boundeydContext.AddRange(item.Value);
+                    allProjects.RemoveAll(x=> item.Value.Select(s=>s.Name).Contains(x.Name));
+                }
+                boundydContexts.Add(boundeydContext);
+            }
+
+            return boundydContexts;
+        }
+
+        private Dictionary<int, List<Project>> GetDependenciesDFS(Project project)
+        {
+            int level = 1;
+            Dictionary<int, List<Project>> graphLevels = new Dictionary<int, List<Project>>()
+            {
+                { 0, new List<Project> { project} }
+            };
+            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.ProjectDependents);
+
+            while (projectsDependencyToScan.Any())
+            {
+                List<ProjectDependency> nextLevel = new List<ProjectDependency>();
+                foreach (var dependency in projectsDependencyToScan)
+                {
+                    nextLevel.AddRange(dependency.Project.ProjectDependents.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
+                }
+
+                var nextLevelCandidates = projectsDependencyToScan.Select(x => x.Project);
+                if (nextLevelCandidates.Any())
+                {
+                    graphLevels.Add(level, new List<Project>(nextLevelCandidates));
+                }
+                level++;
+                projectsDependencyToScan = nextLevel.ToList();
+            }
 
             return graphLevels;
         }
