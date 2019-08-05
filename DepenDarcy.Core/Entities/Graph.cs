@@ -32,15 +32,20 @@ namespace DepenDarcy.Core.Entities
             }
 
             // Create dependencies throw nugets
-            foreach (var proj in Projects.Where(x => x.PublishedNugets.Any()))
+            foreach (var publishNugetProj in Projects.Where(x => x.PublishedNugets.Any()))
             {
-                foreach (var publishedNuget in proj.PublishedNugets)
+                foreach (var publishedNuget in publishNugetProj.PublishedNugets)
                 {
-                    foreach (var testedProj in Projects.Where(x => x.UsedNugets.Select(y => y.Name).Contains(publishedNuget.Name)))
+                    foreach (var useNugetProj in Projects.Where(x => x.UsedNugets.Select(y => y.Name).Contains(publishedNuget.Name)))
                     {
-                        if (testedProj.ProjectDependencies.Any(y => y.Project.Name == proj.Name) == false)
+                        if (useNugetProj.IDependOn.Any(y => y.Project.Name == publishNugetProj.Name && y.ProjectDependencyType == ProjectDependencyType.Nuget) == false)
                         {
-                            testedProj.ProjectDependencies.Add(new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Nuget });
+                            useNugetProj.IDependOn.Add(new ProjectDependency { Project = publishNugetProj, ProjectDependencyType = ProjectDependencyType.Nuget });
+                        }
+
+                        if (publishNugetProj.DependsOnMe.Any(y => y.Project.Name == publishNugetProj.Name && y.ProjectDependencyType == ProjectDependencyType.Nuget) == false)
+                        {
+                            publishNugetProj.DependsOnMe.Add(new ProjectDependency { Project = useNugetProj, ProjectDependencyType = ProjectDependencyType.Nuget });
                         }
                     }
                 }
@@ -53,14 +58,14 @@ namespace DepenDarcy.Core.Entities
             {
                 { 0, new List<Project> { project} }
             };
-            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.ProjectDependents);
+            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.DependsOnMe);
 
             while (projectsDependencyToScan.Any())
             {
                 List<ProjectDependency> nextLevel = new List<ProjectDependency>();
                 foreach (var dependency in projectsDependencyToScan)
                 {
-                    nextLevel.AddRange(dependency.Project.ProjectDependents.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
+                    nextLevel.AddRange(dependency.Project.DependsOnMe.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
                 }
 
                 var nextLevelCandidates = projectsDependencyToScan.Where(d => d.ProjectDependencyType == ProjectDependencyType.Nuget).Select(x => x.Project);
@@ -120,14 +125,14 @@ namespace DepenDarcy.Core.Entities
             {
                 { 0, new List<Project> { project} }
             };
-            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.ProjectDependents);
+            List<ProjectDependency> projectsDependencyToScan = new List<ProjectDependency>(project.DependsOnMe);
 
             while (projectsDependencyToScan.Any())
             {
                 List<ProjectDependency> nextLevel = new List<ProjectDependency>();
                 foreach (var dependency in projectsDependencyToScan)
                 {
-                    nextLevel.AddRange(dependency.Project.ProjectDependents.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
+                    nextLevel.AddRange(dependency.Project.DependsOnMe.Where(x => nextLevel.Select(n => n.Project.Name).Contains(x.Project.Name) == false));
                 }
 
                 var nextLevelCandidates = projectsDependencyToScan.Select(x => x.Project);

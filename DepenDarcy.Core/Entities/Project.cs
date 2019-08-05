@@ -22,8 +22,8 @@ namespace DepenDarcy.Core.Entities
         public Project(ILogger logger)
         {
             this.logger = logger;
-            this.ProjectDependencies = new List<ProjectDependency>();
-            this.ProjectDependents = new List<ProjectDependency>();
+            this.IDependOn = new List<ProjectDependency>();
+            this.DependsOnMe = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
@@ -32,8 +32,8 @@ namespace DepenDarcy.Core.Entities
             this.logger = logger;
             this.Destination = destination;
             this.Name = Path.GetFileName(destination);
-            this.ProjectDependencies = new List<ProjectDependency>();
-            this.ProjectDependents = new List<ProjectDependency>();
+            this.IDependOn = new List<ProjectDependency>();
+            this.DependsOnMe = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
@@ -42,8 +42,8 @@ namespace DepenDarcy.Core.Entities
             this.logger = logger;
             this.Name = name;
             this.Destination = destination;
-            this.ProjectDependencies = new List<ProjectDependency>();
-            this.ProjectDependents = new List<ProjectDependency>();
+            this.IDependOn = new List<ProjectDependency>();
+            this.DependsOnMe = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }

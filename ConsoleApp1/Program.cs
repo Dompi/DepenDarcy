@@ -22,7 +22,7 @@ namespace ConsoleApp1
 
 
             System.Console.WriteLine("---------------------------------------");
-            foreach (var item in graph.GetNugetDependenciesDFS(graph.Projects.Single(x => x.Name.Equals("ResponsibleGaming"))))
+            foreach (var item in graph.GetNugetDependenciesDFS(graph.Projects.Single(x => x.Name.Equals("Techsson.Platform.Customer.Nucleus"))))
             {
                 System.Console.WriteLine($"Level: {item.Key}");
                 foreach (var proj in item.Value)
