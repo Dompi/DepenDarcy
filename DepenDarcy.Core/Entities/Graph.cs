@@ -42,10 +42,6 @@ namespace DepenDarcy.Core.Entities
                         {
                             testedProj.ProjectDependencies.Add(new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Nuget });
                         }
-                        if (proj.ProjectDependents.Any(y => y.Project.Name == testedProj.Name) == false)
-                        {
-                            proj.ProjectDependents.Add(new ProjectDependency { Project = testedProj, ProjectDependencyType = ProjectDependencyType.Nuget });
-                        }
                     }
                 }
             }

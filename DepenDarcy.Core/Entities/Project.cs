@@ -14,8 +14,8 @@ namespace DepenDarcy.Core.Entities
 
         public string Name { get; set; }
         public string Destination { get; set; }
-        public List<ProjectDependency> ProjectDependencies { get; set; }
-        public List<ProjectDependency> ProjectDependents { get; set; }
+        public List<ProjectDependency> IDependOn { get; set; }
+        public List<ProjectDependency> DependsOnMe { get; set; }
         public List<Nuget> PublishedNugets { get; set; }
         public List<Nuget> UsedNugets { get; set; }
 
@@ -63,8 +63,10 @@ namespace DepenDarcy.Core.Entities
                         var proj = projects.SingleOrDefault(x => x.Name.Equals(projName));
                         if (proj != null)
                         {
-                            this.ProjectDependencies.Add(new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Reference });
-                            proj.ProjectDependents.Add(new ProjectDependency { Project = this, ProjectDependencyType = ProjectDependencyType.Reference });
+                            this.IDependOn.Add(
+                                new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Reference });
+                            proj.DependsOnMe.Add(
+                                new ProjectDependency { Project = this, ProjectDependencyType = ProjectDependencyType.Reference });
                         }
                         else
                         {
