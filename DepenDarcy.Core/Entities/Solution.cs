@@ -55,7 +55,6 @@ namespace DepenDarcy.Core.Entities
                         {
                             // TODO
                         }
-
                     }
                     catch (Exception e)
                     {

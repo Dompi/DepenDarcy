@@ -64,9 +64,9 @@ namespace DepenDarcy.Core.Entities
                         if (proj != null)
                         {
                             this.IDependOn.Add(
-                                new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Reference });
+                                new ProjectDependency { Project = proj, ProjectDependencyType = ProjectDependencyType.Reference, Reason = proj.Name });
                             proj.DependsOnMe.Add(
-                                new ProjectDependency { Project = this, ProjectDependencyType = ProjectDependencyType.Reference });
+                                new ProjectDependency { Project = this, ProjectDependencyType = ProjectDependencyType.Reference, Reason = this.Name });
                         }
                         else
                         {

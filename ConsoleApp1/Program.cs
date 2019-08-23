@@ -17,6 +17,16 @@ namespace ConsoleApp1
             graph.BuildGraph(root);
 
 
+
+            System.Console.WriteLine("----------------------*********************-----------------");
+            foreach (var proj in graph.Projects.Where(x => x.UsedNugets.Select(s => s.Name).Contains("Techsson.Jrc.Client")))
+            {
+                System.Console.WriteLine($"Project to refresh: {proj.Name} nuget version: {proj.UsedNugets.Single(x=>x.Name == "Techsson.Jrc.Client").Version}");
+            }
+            System.Console.WriteLine("----------------------*********************-----------------");
+
+
+
             var a = graph.GetBoundydContexts();
 
 
