@@ -14,6 +14,8 @@ namespace DepenDarcy.Core.Entities
 
         public string Name { get; set; }
         public string Destination { get; set; }
+        public string SolutionName { get; private set; }
+
         public List<ProjectDependency> IDependOn { get; set; }
         public List<ProjectDependency> DependsOnMe { get; set; }
         public List<Nuget> PublishedNugets { get; set; }
@@ -37,11 +39,12 @@ namespace DepenDarcy.Core.Entities
             this.PublishedNugets = new List<Nuget>();
             this.UsedNugets = new List<Nuget>();
         }
-        public Project(string name, string destination, ILogger logger)
+        public Project(string name, string destination, string solutionName,ILogger logger)
         {
             this.logger = logger;
             this.Name = name;
             this.Destination = destination;
+            this.SolutionName = solutionName;
             this.IDependOn = new List<ProjectDependency>();
             this.DependsOnMe = new List<ProjectDependency>();
             this.PublishedNugets = new List<Nuget>();

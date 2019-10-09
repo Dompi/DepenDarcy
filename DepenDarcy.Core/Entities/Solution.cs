@@ -48,7 +48,9 @@ namespace DepenDarcy.Core.Entities
                             this.Projects.Add(
                                 new Project(
                                         proj[0].Replace("\"", "").Trim(),
-                                        Path.Combine(root, proj[1].Replace("\"", "").Trim()), this.logger)
+                                        Path.Combine(root, proj[1].Replace("\"", "").Trim()), 
+                                        this.Name,
+                                        this.logger)
                                 );
                         }
                         else
